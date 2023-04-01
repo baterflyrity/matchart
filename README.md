@@ -100,7 +100,7 @@ plot([x1, y1], [y2], [x3, y3], y4,
      fillstyle='top')
 ```
 
-![](docs/example1.png)
+![](https://raw.githubusercontent.com/baterflyrity/matchart/main/docs/example1.png)
 
 ### Migrate from matplotlib simple
 
@@ -126,7 +126,7 @@ ax.set_title("'fivethirtyeight' style sheet")
 plt.show()
 ```
 
-![](docs/simple_matplotlib.png)
+![](https://raw.githubusercontent.com/baterflyrity/matchart/main/docs/simple_matplotlib.png)
 
 and rewrite it with MatChart:
 
@@ -147,7 +147,7 @@ plot([x, np.sin(x) + x + np.random.randn(50)],
 	theme='fivethirtyeight')
 ```
 
-![](docs/simple_matchart.png)
+![](https://raw.githubusercontent.com/baterflyrity/matchart/main/docs/simple_matchart.png)
 
 *Note that default figure sizes differ.*
 
@@ -180,7 +180,7 @@ ax.set_ylabel('Number of people (millions)')
 plt.show()
 ```
 
-![](docs/stackplot_matplotlib.png)
+![](https://raw.githubusercontent.com/baterflyrity/matchart/main/docs/stackplot_matplotlib.png)
 
 and rewrite it with MatChart:
 
@@ -210,6 +210,6 @@ plot([year, population_by_continent.values()],
 	ylabel='Number of people (millions)')
 ```
 
-![](docs/stackplot_matchart.png)
+![](https://raw.githubusercontent.com/baterflyrity/matchart/main/docs/stackplot_matchart.png)
 
 *Note that default figure sizes differ.*
