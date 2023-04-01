@@ -1,7 +1,7 @@
 """Convenient plotting wrapper around matplotlib."""
 from __future__ import annotations
 
-__version__ = "1.1.1"
+__version__ = "1.1.2"
 
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 

@@ -53,9 +53,9 @@ plot([x1, y1], [y2], [x3, y3], y4, ...,
 
 `ylabel` - vertical axis label. `ylabel_kwargs` - [additional parameters](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html).
 
-`limit` - set `True` to autodetect 2D plot's borders or `False` to use dafault matplot's behaviur. Set to `(left, right, bottom, top)` to use [custom borders](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylim.html).
+`limit` - set `True` to autodetect 2D plot's borders or `False` to use default matplot's behaviour. Set to `(left, right, bottom, top)` to use [custom borders](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylim.html).
 
-`figsize` - plot's size as `(width, height)` in inches. By default is overriden with *10x8*.
+`figsize` - plot's size as `(width, height)` in inches. By default, is overriden with *10x8*.
 
 `dpi` - plot's resolution in dots-per-inch.
 
@@ -149,7 +149,7 @@ plot([x, np.sin(x) + x + np.random.randn(50)],
 
 ![](https://raw.githubusercontent.com/baterflyrity/matchart/main/docs/simple_matchart.png)
 
-*Note that default figure sizes differ.*
+*Note that default figure size differs.*
 
 ### Migrate from matplotlib stackplot
 
@@ -212,4 +212,4 @@ plot([year, population_by_continent.values()],
 
 ![](https://raw.githubusercontent.com/baterflyrity/matchart/main/docs/stackplot_matchart.png)
 
-*Note that default figure sizes differ.*
+*Note that default figure size and theme differs.*
