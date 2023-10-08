@@ -186,6 +186,11 @@ def plot(*datasets: Union[XY, Y, XYZ],  #
 	normalized_datasets = [ds for dataset in datasets for ds in _normalize_datasets(dataset, xcolumn=xcolumn, transpose=transpose, flatten=flatten)]
 	diagrams = []
 	labels_count = 0
+	dimensions = len(normalized_datasets[0])
+	x_minimum = normalized_datasets[0].min_x
+	x_maximum = normalized_datasets[0].max_x
+	y_minimum = normalized_datasets[0].min_y
+	y_maximum = normalized_datasets[0].max_y
 	for i, dataset in enumerate(normalized_datasets):
 		params = plotter_kwargs.copy()
 		for k, v in plotter_kwargs.items():
@@ -201,13 +206,7 @@ def plot(*datasets: Union[XY, Y, XYZ],  #
 		if 'label' in params:
 			labels_count += 1
 		diagrams.append(plotter(*dataset, **params))
-		if i == 0:
-			dimensions = len(dataset)
-			x_minimum = dataset.min_x
-			x_maximum = dataset.max_x
-			y_minimum = dataset.min_y
-			y_maximum = dataset.max_y
-		else:
+		if i:
 			dimensions = max(dimensions, len(dataset))
 			x_minimum = min(x_minimum, dataset.min_x)
 			x_maximum = max(x_maximum, dataset.max_x)
