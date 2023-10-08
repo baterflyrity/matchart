@@ -212,4 +212,4 @@ plot([year, population_by_continent.values()],
 
 ![](https://raw.githubusercontent.com/baterflyrity/matchart/main/docs/stackplot_matchart.png)
 
-*Note that default figure size and theme differs.*
+*Note that default figure size and theme differ.*
