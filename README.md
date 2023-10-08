@@ -71,7 +71,7 @@ theme = 'seaborn-v0_8-deep',
 
 `theme` - plot's [style](https://matplotlib.org/stable/api/style_api.html#matplotlib.style.use). By default is overriden with *seaborn-v0_8-deep*.
 
-## Example
+## Examples
 
 ### Just plot something
 
@@ -317,3 +317,12 @@ with cplot(
 ```
 
 Now you can customize plots just adding literally one letter.
+
+# Changelog
+
+**1.1.3**:
+
+* Add `context` parameter and alias `matchart.cplot(...)` to delay plot showing within context manager.
+* Add `block` parameter of [matplotlib's show function](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show).
+* Small enhancements and bugs fixes.
+
