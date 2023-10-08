@@ -23,6 +23,63 @@ class ChartError(ValueError):
 	pass
 
 
+class Dataset(list):
+	"""
+	List of data, e.g. [x, y].
+	"""
+
+	def __init__(self, items, *, label: Optional[str] = None):
+		if not len(items):
+			raise ValueError('Empty dataset.')
+		super().__init__(items)
+		self.label = label
+
+	@property
+	def T(self) -> Dataset:
+		return Dataset(np.array(self).T, label=self.label)
+
+	def flatten(self) -> Dataset:
+		return Dataset([np.array(x).flatten() for x in self], label=self.label)
+
+	@property
+	def min_x(self) -> Any:
+		if len(self) > 1:
+			return np.array(self[0]).min()
+		else:
+			return 0
+
+	@property
+	def max_x(self) -> Any:
+		if len(self) > 1:
+			return np.array(self[0]).max()
+		else:
+			return len(self[0]) - 1
+
+	@property
+	def min_y(self) -> Any:
+		return np.array(self[-1]).min()
+
+	@property
+	def max_y(self) -> Any:
+		return np.array(self[-1]).max()
+
+
+class ContextPlotter(tuple):
+	def __init__(self, results: Tuple[plt.Figure, plt.Axes, List[plt.Artist]], show: bool, block: Optional[bool]):
+		self.block = block
+		self.show = show
+
+	def __new__(cls, results, *_, **__):
+		return super(ContextPlotter, cls).__new__(cls, results)
+
+	def __enter__(self) -> Tuple[plt.Figure, plt.Axes, List[plt.Artist]]:
+		return self
+
+	def __exit__(self, *_):
+		if self.show:
+			plt.show(block=self.block)
+
+
 def _cycle(arguments: CycledArguments, index: int) -> Optional[NativeArgument]:
 	if arguments is not None:
 		if isinstance(arguments, (list, tuple)):
@@ -70,47 +127,6 @@ def _is_iterable(x) -> bool:
 	return isinstance(x, Iterable)  # ignore obsolete __getitem__ iteration
 
 
-class Dataset(list):
-	"""
-	List of data, e.g. [x, y].
-	"""
-
-	def __init__(self, items, *, label: Optional[str] = None):
-		if not len(items):
-			raise ValueError('Empty dataset.')
-		super().__init__(items)
-		self.label = label
-
-	@property
-	def T(self) -> Dataset:
-		return Dataset(np.array(self).T, label=self.label)
-
-	def flatten(self) -> Dataset:
-		return Dataset([np.array(x).flatten() for x in self], label=self.label)
-
-	@property
-	def min_x(self) -> Any:
-		if len(self) > 1:
-			return np.array(self[0]).min()
-		else:
-			return 0
-
-	@property
-	def max_x(self) -> Any:
-		if len(self) > 1:
-			return np.array(self[0]).max()
-		else:
-			return len(self[0]) - 1
-
-	@property
-	def min_y(self) -> Any:
-		return np.array(self[-1]).min()
-
-	@property
-	def max_y(self) -> Any:
-		return np.array(self[-1]).max()
-
-
 def _normalize_datasets(dataset, *, xcolumn: Optional[str] = None, transpose: Optional[bool] = None, flatten: bool = False) -> List[Dataset]:
 	if isinstance(dataset, (pd.DataFrame, pd.Series)):  # process pandas
 		if xcolumn is not None:  # pairwise columns with xcolumn as different datasets
@@ -140,45 +156,45 @@ def _normalize_datasets(dataset, *, xcolumn: Optional[str] = None, transpose: Op
 		return [dataset]
 
 
-def plot(*datasets: Union[XY, Y, XYZ],  #
+def plot(*datasets: Union[XY, Y, XYZ],
 		 # common parameters
-		 kind='plot',  #
-		 flatten: bool = False,  #
-		 transpose: Optional[bool] = None,  #
-		 xcolumn: Optional[str] = 'x',  #
-		 guess_label: bool = True,  #
-		 show: bool = True,  #
-		 block: Optional[bool] = None,  #
+		 kind='plot',
+		 flatten: bool = False,
+		 transpose: Optional[bool] = None,
+		 xcolumn: Optional[str] = 'x',
+		 guess_label: bool = True,
+		 show: bool = True,
+		 block: Optional[bool] = None,
 		 # plotter explict parameters
-		 label: ClippedArguments = None,  #
-		 color: CycledArguments = None,  #
-		 marker: ClippedArguments = None,  #
-		 linestyle: ClippedArguments = None,  #
-		 linewidth: ClippedArguments = None,  #
-		 markersize: ClippedArguments = None,  #
+		 label: ClippedArguments = None,
+		 color: CycledArguments = None,
+		 marker: ClippedArguments = None,
+		 linestyle: ClippedArguments = None,
+		 linewidth: ClippedArguments = None,
+		 markersize: ClippedArguments = None,
 		 # figure and axes parameters
-		 legend: Optional[bool] = None,  #
-		 legend_kwargs: Optional[Dict[str, Any]] = None,  #
-		 title: Optional[str] = None,  #
-		 title_kwargs: Optional[Dict[str, Any]] = None,  #
-		 xlabel: Optional[str] = None,  #
-		 xlabel_kwargs: Optional[Dict[str, Any]] = None,  #
-		 ylabel: Optional[str] = None,  #
-		 ylabel_kwargs: Optional[Dict[str, Any]] = None,  #
-		 limit: Union[Tuple[Any, Any, Any, Any], bool] = True,  #
-		 figsize: Tuple[float, float] = (10, 8),  #
-		 dpi: float = 100,  #
-		 subplots_kwargs: Optional[Dict[str, Any]] = None,  #
-		 grid: Optional[bool] = False,  #
-		 grid_kwargs: Optional[Dict[str, Any]] = None,  #
-		 theme='seaborn-v0_8-deep',  #
+		 legend: Optional[bool] = None,
+		 legend_kwargs: Optional[Dict[str, Any]] = None,
+		 title: Optional[str] = None,
+		 title_kwargs: Optional[Dict[str, Any]] = None,
+		 xlabel: Optional[str] = None,
+		 xlabel_kwargs: Optional[Dict[str, Any]] = None,
+		 ylabel: Optional[str] = None,
+		 ylabel_kwargs: Optional[Dict[str, Any]] = None,
+		 limit: Union[Tuple[Any, Any, Any, Any], bool] = True,
+		 figsize: Tuple[float, float] = (10, 8),
+		 dpi: float = 100,
+		 subplots_kwargs: Optional[Dict[str, Any]] = None,
+		 grid: Optional[bool] = False,
+		 grid_kwargs: Optional[Dict[str, Any]] = None,
+		 theme='seaborn-v0_8-deep',
 		 # plotter rest parameters
-		 **plotter_kwargs  #
+		 **plotter_kwargs
 		 ) -> Tuple[plt.Figure, plt.Axes, List[plt.Artist]]:
-	fig, ax = plt.subplots(figsize=figsize, dpi=dpi, **(subplots_kwargs or {}))
 	if not datasets:
-		return fig, ax, []
+		raise ChartError('No data to plot.')
 	plt.style.use(theme)
+	fig, ax = plt.subplots(figsize=figsize, dpi=dpi, **(subplots_kwargs or {}))
 	try:
 		plotter = getattr(ax, kind)
 	except AttributeError:
@@ -229,6 +245,4 @@ def plot(*datasets: Union[XY, Y, XYZ],  #
 		ax.set_ylim(bottom=limit[2], top=limit[3])
 	if grid in [True, None]:
 		plt.grid(visible=grid, **(grid_kwargs or {}))
-	if show:
-		plt.show(block=block)
-	return fig, ax, diagrams
+	return ContextPlotter(results=(fig, ax, diagrams), show=show, block=block)
