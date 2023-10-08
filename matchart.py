@@ -1,7 +1,7 @@
 """Convenient plotting wrapper around matplotlib."""
 from __future__ import annotations
 
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
@@ -141,45 +141,48 @@ def _normalize_datasets(dataset, *, xcolumn: Optional[str] = None, transpose: Op
 
 
 def plot(*datasets: Union[XY, Y, XYZ],  #
-         # common parameters
-         kind='plot',  #
-         flatten: bool = False,  #
-         transpose: Optional[bool] = None,  #
-         xcolumn: Optional[str] = 'x',  #
-         guess_label: bool = True,  #
-         show: bool = True,  #
-         # plotter explict parameters
-         label: ClippedArguments = None,  #
-         color: CycledArguments = None,  #
-         marker: ClippedArguments = None,  #
-         linestyle: ClippedArguments = None,  #
-         linewidth: ClippedArguments = None,  #
-         markersize: ClippedArguments = None,  #
-         # figure and axes parameters
-         legend: Optional[bool] = None,  #
-         legend_kwargs: Optional[Dict[str, Any]] = None,  #
-         title: Optional[str] = None,  #
-         title_kwargs: Optional[Dict[str, Any]] = None,  #
-         xlabel: Optional[str] = None,  #
-         xlabel_kwargs: Optional[Dict[str, Any]] = None,  #
-         ylabel: Optional[str] = None,  #
-         ylabel_kwargs: Optional[Dict[str, Any]] = None,  #
-         limit: Union[Tuple[Any, Any, Any, Any], bool] = True,  #
-         figsize: Tuple[float, float] = (10, 8),  #
-         dpi: float = 100,  #
-         subplots_kwargs: Optional[Dict[str, Any]] = None,  #
-         grid: Optional[bool] = False,  #
-         grid_kwargs: Optional[Dict[str, Any]] = None,  #
-         theme='seaborn-v0_8-deep',  #
-         # plotter rest parameters
-         **plotter_kwargs  #
-         ) -> Tuple[plt.Figure, plt.Axes, List[plt.Artist]]:
-	plt.style.use(theme)
+		 # common parameters
+		 kind='plot',  #
+		 flatten: bool = False,  #
+		 transpose: Optional[bool] = None,  #
+		 xcolumn: Optional[str] = 'x',  #
+		 guess_label: bool = True,  #
+		 show: bool = True,  #
+		 block: Optional[bool] = None,  #
+		 # plotter explict parameters
+		 label: ClippedArguments = None,  #
+		 color: CycledArguments = None,  #
+		 marker: ClippedArguments = None,  #
+		 linestyle: ClippedArguments = None,  #
+		 linewidth: ClippedArguments = None,  #
+		 markersize: ClippedArguments = None,  #
+		 # figure and axes parameters
+		 legend: Optional[bool] = None,  #
+		 legend_kwargs: Optional[Dict[str, Any]] = None,  #
+		 title: Optional[str] = None,  #
+		 title_kwargs: Optional[Dict[str, Any]] = None,  #
+		 xlabel: Optional[str] = None,  #
+		 xlabel_kwargs: Optional[Dict[str, Any]] = None,  #
+		 ylabel: Optional[str] = None,  #
+		 ylabel_kwargs: Optional[Dict[str, Any]] = None,  #
+		 limit: Union[Tuple[Any, Any, Any, Any], bool] = True,  #
+		 figsize: Tuple[float, float] = (10, 8),  #
+		 dpi: float = 100,  #
+		 subplots_kwargs: Optional[Dict[str, Any]] = None,  #
+		 grid: Optional[bool] = False,  #
+		 grid_kwargs: Optional[Dict[str, Any]] = None,  #
+		 theme='seaborn-v0_8-deep',  #
+		 # plotter rest parameters
+		 **plotter_kwargs  #
+		 ) -> Tuple[plt.Figure, plt.Axes, List[plt.Artist]]:
 	fig, ax = plt.subplots(figsize=figsize, dpi=dpi, **(subplots_kwargs or {}))
+	if not datasets:
+		return fig, ax, []
+	plt.style.use(theme)
 	try:
 		plotter = getattr(ax, kind)
 	except AttributeError:
-		raise ChartError(f'Plot kind {kind} cold not be found.')
+		raise ChartError(f'Plot kind {kind} could not be found.')
 	normalized_datasets = [ds for dataset in datasets for ds in _normalize_datasets(dataset, xcolumn=xcolumn, transpose=transpose, flatten=flatten)]
 	diagrams = []
 	labels_count = 0
@@ -198,7 +201,7 @@ def plot(*datasets: Union[XY, Y, XYZ],  #
 		if 'label' in params:
 			labels_count += 1
 		diagrams.append(plotter(*dataset, **params))
-		if not i:
+		if i == 0:
 			dimensions = len(dataset)
 			x_minimum = dataset.min_x
 			x_maximum = dataset.max_x
@@ -228,5 +231,5 @@ def plot(*datasets: Union[XY, Y, XYZ],  #
 	if grid in [True, None]:
 		plt.grid(visible=grid, **(grid_kwargs or {}))
 	if show:
-		plt.show()
+		plt.show(block=block)
 	return fig, ax, diagrams
