@@ -165,6 +165,7 @@ def plot(*datasets: Union[XY, Y, XYZ],
 		 guess_label: bool = True,
 		 show: bool = True,
 		 block: Optional[bool] = None,
+		 context: bool = False,
 		 # plotter explict parameters
 		 label: ClippedArguments = None,
 		 color: CycledArguments = None,
@@ -245,4 +246,12 @@ def plot(*datasets: Union[XY, Y, XYZ],
 		ax.set_ylim(bottom=limit[2], top=limit[3])
 	if grid in [True, None]:
 		plt.grid(visible=grid, **(grid_kwargs or {}))
-	return ContextPlotter(results=(fig, ax, diagrams), show=show, block=block)
+	ctx = ContextPlotter(results=(fig, ax, diagrams), show=show, block=block)
+	if context:
+		return ctx
+	with ctx as results:
+		return results
+
+
+def cplot(*args, **kwargs) -> Tuple[plt.Figure, plt.Axes, List[plt.Artist]]:
+	return plot(*args, **{'context': True, **kwargs})
