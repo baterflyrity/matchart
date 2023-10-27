@@ -183,6 +183,9 @@ def plot(*datasets: Union[XY, Y, XYZ],
 		 ylabel: Optional[str] = None,
 		 ylabel_kwargs: Optional[Dict[str, Any]] = None,
 		 limit: Union[Tuple[Any, Any, Any, Any], bool] = True,
+		 xticks: Optional[Union[Iterable, Dict[str, Any], bool]] = None,
+		 yticks: Optional[Union[Iterable, Dict[str, Any], bool]] = None,
+		 ticks: Optional[Dict[str, Union[Iterable, Dict[str, Any], bool]]] = None,
 		 figsize: Tuple[float, float] = (10, 8),
 		 dpi: float = 100,
 		 subplots_kwargs: Optional[Dict[str, Any]] = None,
@@ -244,6 +247,29 @@ def plot(*datasets: Union[XY, Y, XYZ],
 	elif not isinstance(limit, bool):
 		ax.set_xlim(left=limit[0], right=limit[1])
 		ax.set_ylim(bottom=limit[2], top=limit[3])
+	if ticks is not None and (xticks is not None or yticks is not None):
+		raise ValueError('Argument ticks defined both x-,y-axis ticks hence can not be used with arguments xticks or yticks simultaneously.')
+	ticks = ticks or dict()
+	if xticks is not None:
+		ticks['x'] = xticks
+	if yticks is not None:
+		ticks['y'] = yticks
+	if ticks is not None:
+		for key, value in ticks.items():
+			if key in 'xX':
+				ticks_setter = ax.set_xticks
+			elif key in 'yY':
+				ticks_setter = ax.set_yticks
+			else:
+				raise ValueError(f'Unknown axis {key} for ticks.')
+			if value is True:
+				pass  # By default, ticks are already displayed.
+			elif value is False:
+				ticks_setter([])
+			elif isinstance(value, dict):
+				ticks_setter(**value)
+			else:
+				ticks_setter(value)
 	if grid in [True, None]:
 		plt.grid(visible=grid, **(grid_kwargs or {}))
 	ctx = ContextPlotter(results=(fig, ax, diagrams), show=show, block=block)

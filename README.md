@@ -30,6 +30,9 @@ xlabel_kwargs: Optional[Dict[str, Any]] = None,
 ylabel: Optional[str] = None,
 ylabel_kwargs: Optional[Dict[str, Any]] = None,
 limit: Union[Tuple[Any, Any, Any, Any], bool] = True,
+xticks: Optional[Union[Iterable, Dict[str, Any], bool]] = None,
+yticks: Optional[Union[Iterable, Dict[str, Any], bool]] = None,
+ticks: Optional[Dict[str, Union[Iterable, Dict[str, Any], bool]]] = None,
 figsize: Tuple[float, float] = (10, 8),
 dpi: float = 100,
 subplots_kwargs: Optional[Dict[str, Any]] = None,
@@ -60,6 +63,8 @@ theme = 'seaborn-v0_8-deep',
 `ylabel` - vertical axis label. `ylabel_kwargs` - [additional parameters](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html).
 
 `limit` - set `True` to autodetect 2D plot's borders or `False` to use default matplot's behaviour. Set to `(left, right, bottom, top)` to use [custom borders](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylim.html).
+
+`ticks`, `xticks`, `yticks` - set [corresponding ticks](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.xticks.html). Can be `False` to disable ticks. Can be dictionary of kwargs. Can be array-like value to define ticks locations. Argument `xticks` defines ticks for X axis, `yticks` - for Y axis. Alternatively argument `ticks` can be defined as dictionary with keys `'x'` or `'y'` containing same values as  `xticks` and `yticks` arguments. Argument `xticks` must be used solely.
 
 `figsize` - plot's size as `(width, height)` in inches. By default, is overriden with *10x8*.
 
