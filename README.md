@@ -331,6 +331,11 @@ Now you can customize plots just adding literally one letter.
 
 # Changelog
 
+**1.1.4**:
+
+* Add ticks control parameters.
+* Add automatic cleanup on any error (parameter `clear_on_error`).
+
 **1.1.3**:
 
 * Add `context` parameter and alias `matchart.cplot(...)` to delay plot showing within context manager.
