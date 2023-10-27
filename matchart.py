@@ -166,6 +166,7 @@ def plot(*datasets: Union[XY, Y, XYZ],
 		 show: bool = True,
 		 block: Optional[bool] = None,
 		 context: bool = False,
+		 clear_on_error: bool = True,
 		 # plotter explict parameters
 		 label: ClippedArguments = None,
 		 color: CycledArguments = None,
@@ -195,88 +196,93 @@ def plot(*datasets: Union[XY, Y, XYZ],
 		 # plotter rest parameters
 		 **plotter_kwargs
 		 ) -> Tuple[plt.Figure, plt.Axes, List[plt.Artist]]:
-	if not datasets:
-		raise ChartError('No data to plot.')
-	plt.style.use(theme)
-	fig, ax = plt.subplots(figsize=figsize, dpi=dpi, **(subplots_kwargs or {}))
 	try:
-		plotter = getattr(ax, kind)
-	except AttributeError:
-		raise ChartError(f'Plot kind {kind} could not be found.')
-	normalized_datasets = [ds for dataset in datasets for ds in _normalize_datasets(dataset, xcolumn=xcolumn, transpose=transpose, flatten=flatten)]
-	diagrams = []
-	labels_count = 0
-	dimensions = len(normalized_datasets[0])
-	x_minimum = normalized_datasets[0].min_x
-	x_maximum = normalized_datasets[0].max_x
-	y_minimum = normalized_datasets[0].min_y
-	y_maximum = normalized_datasets[0].max_y
-	for i, dataset in enumerate(normalized_datasets):
-		params = plotter_kwargs.copy()
-		for k, v in plotter_kwargs.items():
-			_clip_and_set(params, k, v, i)
-		_clip_and_set(params, 'label', label, i)
-		_cycle_and_set(params, 'color', color, i)
-		_clip_and_set(params, 'marker', marker, i)
-		_clip_and_set(params, 'linestyle', linestyle, i)
-		_clip_and_set(params, 'linewidth', linewidth, i)
-		_clip_and_set(params, 'markersize', markersize, i)
-		if guess_label and 'label' not in params and dataset.label:
-			params['label'] = dataset.label
-		if 'label' in params:
-			labels_count += 1
-		diagrams.append(plotter(*dataset, **params))
-		if i:
-			dimensions = max(dimensions, len(dataset))
-			x_minimum = min(x_minimum, dataset.min_x)
-			x_maximum = max(x_maximum, dataset.max_x)
-			y_minimum = min(y_minimum, dataset.min_y)
-			y_maximum = max(y_maximum, dataset.max_y)
-	diagrams = [diagram for container in diagrams for diagram in container]
-	if legend is True or legend is None and len(diagrams) > 1 and labels_count:
-		ax.legend(**(legend_kwargs or {}))
-	if xlabel is not None:
-		ax.set_xlabel(xlabel, **(xlabel_kwargs or {}))
-	if ylabel is not None:
-		ax.set_ylabel(ylabel, **(ylabel_kwargs or {}))
-	if title is not None:
-		ax.set_title(title, **(title_kwargs or {}))
-	if limit is True and dimensions == 2:
-		ax.set_xlim(left=x_minimum, right=x_maximum)
-		ax.set_ylim(bottom=y_minimum, top=y_maximum)
-	elif not isinstance(limit, bool):
-		ax.set_xlim(left=limit[0], right=limit[1])
-		ax.set_ylim(bottom=limit[2], top=limit[3])
-	if ticks is not None and (xticks is not None or yticks is not None):
-		raise ValueError('Argument ticks defined both x-,y-axis ticks hence can not be used with arguments xticks or yticks simultaneously.')
-	ticks = ticks or dict()
-	if xticks is not None:
-		ticks['x'] = xticks
-	if yticks is not None:
-		ticks['y'] = yticks
-	if ticks is not None:
-		for key, value in ticks.items():
-			if key in 'xX':
-				ticks_setter = ax.set_xticks
-			elif key in 'yY':
-				ticks_setter = ax.set_yticks
-			else:
-				raise ValueError(f'Unknown axis {key} for ticks.')
-			if value is True:
-				pass  # By default, ticks are already displayed.
-			elif value is False:
-				ticks_setter([])
-			elif isinstance(value, dict):
-				ticks_setter(**value)
-			else:
-				ticks_setter(value)
-	if grid in [True, None]:
-		plt.grid(visible=grid, **(grid_kwargs or {}))
-	ctx = ContextPlotter(results=(fig, ax, diagrams), show=show, block=block)
-	if context:
-		return ctx
-	with ctx as results:
-		return results
+		if not datasets:
+			raise ChartError('No data to plot.')
+		plt.style.use(theme)
+		fig, ax = plt.subplots(figsize=figsize, dpi=dpi, **(subplots_kwargs or {}))
+		try:
+			plotter = getattr(ax, kind)
+		except AttributeError:
+			raise ChartError(f'Plot kind {kind} could not be found.')
+		normalized_datasets = [ds for dataset in datasets for ds in _normalize_datasets(dataset, xcolumn=xcolumn, transpose=transpose, flatten=flatten)]
+		diagrams = []
+		labels_count = 0
+		dimensions = len(normalized_datasets[0])
+		x_minimum = normalized_datasets[0].min_x
+		x_maximum = normalized_datasets[0].max_x
+		y_minimum = normalized_datasets[0].min_y
+		y_maximum = normalized_datasets[0].max_y
+		for i, dataset in enumerate(normalized_datasets):
+			params = plotter_kwargs.copy()
+			for k, v in plotter_kwargs.items():
+				_clip_and_set(params, k, v, i)
+			_clip_and_set(params, 'label', label, i)
+			_cycle_and_set(params, 'color', color, i)
+			_clip_and_set(params, 'marker', marker, i)
+			_clip_and_set(params, 'linestyle', linestyle, i)
+			_clip_and_set(params, 'linewidth', linewidth, i)
+			_clip_and_set(params, 'markersize', markersize, i)
+			if guess_label and 'label' not in params and dataset.label:
+				params['label'] = dataset.label
+			if 'label' in params:
+				labels_count += 1
+			diagrams.append(plotter(*dataset, **params))
+			if i:
+				dimensions = max(dimensions, len(dataset))
+				x_minimum = min(x_minimum, dataset.min_x)
+				x_maximum = max(x_maximum, dataset.max_x)
+				y_minimum = min(y_minimum, dataset.min_y)
+				y_maximum = max(y_maximum, dataset.max_y)
+		diagrams = [diagram for container in diagrams for diagram in container]
+		if legend is True or legend is None and len(diagrams) > 1 and labels_count:
+			ax.legend(**(legend_kwargs or {}))
+		if xlabel is not None:
+			ax.set_xlabel(xlabel, **(xlabel_kwargs or {}))
+		if ylabel is not None:
+			ax.set_ylabel(ylabel, **(ylabel_kwargs or {}))
+		if title is not None:
+			ax.set_title(title, **(title_kwargs or {}))
+		if limit is True and dimensions == 2:
+			ax.set_xlim(left=x_minimum, right=x_maximum)
+			ax.set_ylim(bottom=y_minimum, top=y_maximum)
+		elif not isinstance(limit, bool):
+			ax.set_xlim(left=limit[0], right=limit[1])
+			ax.set_ylim(bottom=limit[2], top=limit[3])
+		if ticks is not None and (xticks is not None or yticks is not None):
+			raise ValueError('Argument ticks defined both x-,y-axis ticks hence can not be used with arguments xticks or yticks simultaneously.')
+		ticks = ticks or dict()
+		if xticks is not None:
+			ticks['x'] = xticks
+		if yticks is not None:
+			ticks['y'] = yticks
+		if ticks is not None:
+			for key, value in ticks.items():
+				if key in 'xX':
+					ticks_setter = ax.set_xticks
+				elif key in 'yY':
+					ticks_setter = ax.set_yticks
+				else:
+					raise ValueError(f'Unknown axis {key} for ticks.')
+				if value is True:
+					pass  # By default, ticks are already displayed.
+				elif value is False:
+					ticks_setter([])
+				elif isinstance(value, dict):
+					ticks_setter(**value)
+				else:
+					ticks_setter(value)
+		if grid in [True, None]:
+			plt.grid(visible=grid, **(grid_kwargs or {}))
+		ctx = ContextPlotter(results=(fig, ax, diagrams), show=show, block=block)
+		if context:
+			return ctx
+		with ctx as results:
+			return results
+	except:
+		if clear_on_error:
+			plt.close()
+		raise
 
 
 def cplot(*args, **kwargs) -> Tuple[plt.Figure, plt.Axes, List[plt.Artist]]:

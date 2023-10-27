@@ -8,39 +8,43 @@ MatChart is a convenient one-line wrapper around *matplotlib* plotting library.
 from matchart import plot
 
 plot([x1, y1], [y2], [x3, y3], y4, ...,
-	 # common parameters
-	 kind='plot',
-	 show: bool = True,
-block: Optional[bool] = None,
-context: bool = False,
+	# common parameters
+	kind='plot',
+	show: bool = True,
+	block: Optional[bool] = None,
+	context: bool = False,
+	clear_on_error: bool = True,
+	
 	# plotter explict parameters
-label: ClippedArguments = None,
-color: CycledArguments = None,
-marker: ClippedArguments = None,
-linestyle: ClippedArguments = None,
-linewidth: ClippedArguments = None,
-markersize: ClippedArguments = None,
+	label: ClippedArguments = None,
+	color: CycledArguments = None,
+	marker: ClippedArguments = None,
+	linestyle: ClippedArguments = None,
+	linewidth: ClippedArguments = None,
+	markersize: ClippedArguments = None,
+	
 	# figure and axes parameters
-legend: Optional[bool] = None,
-legend_kwargs: Optional[Dict[str, Any]] = None,
-title: Optional[str] = None,
-title_kwargs: Optional[Dict[str, Any]] = None,
-xlabel: Optional[str] = None,
-xlabel_kwargs: Optional[Dict[str, Any]] = None,
-ylabel: Optional[str] = None,
-ylabel_kwargs: Optional[Dict[str, Any]] = None,
-limit: Union[Tuple[Any, Any, Any, Any], bool] = True,
-xticks: Optional[Union[Iterable, Dict[str, Any], bool]] = None,
-yticks: Optional[Union[Iterable, Dict[str, Any], bool]] = None,
-ticks: Optional[Dict[str, Union[Iterable, Dict[str, Any], bool]]] = None,
-figsize: Tuple[float, float] = (10, 8),
-dpi: float = 100,
-subplots_kwargs: Optional[Dict[str, Any]] = None,
-grid: Optional[bool] = False,
-grid_kwargs: Optional[Dict[str, Any]] = None,
-theme = 'seaborn-v0_8-deep',
-# plotter rest parameters
-** plotter_kwargs  #
+	legend: Optional[bool] = None,
+	legend_kwargs: Optional[Dict[str, Any]] = None,
+	title: Optional[str] = None,
+	title_kwargs: Optional[Dict[str, Any]] = None,
+	xlabel: Optional[str] = None,
+	xlabel_kwargs: Optional[Dict[str, Any]] = None,
+	ylabel: Optional[str] = None,
+	ylabel_kwargs: Optional[Dict[str, Any]] = None,
+	limit: Union[Tuple[Any, Any, Any, Any], bool] = True,
+	xticks: Optional[Union[Iterable, Dict[str, Any], bool]] = None,
+	yticks: Optional[Union[Iterable, Dict[str, Any], bool]] = None,
+	ticks: Optional[Dict[str, Union[Iterable, Dict[str, Any], bool]]] = None,
+	figsize: Tuple[float, float] = (10, 8),
+	dpi: float = 100,
+	subplots_kwargs: Optional[Dict[str, Any]] = None,
+	grid: Optional[bool] = False,
+	grid_kwargs: Optional[Dict[str, Any]] = None,
+	theme = 'seaborn-v0_8-deep',
+
+	# plotter rest parameters
+	** plotter_kwargs 
 ) -> Tuple[Figure, Axes, List[Artist]]
 ```
 
@@ -51,6 +55,8 @@ theme = 'seaborn-v0_8-deep',
 `block` - whether to block running code when showing plot or just display windows and run next lines. By default, detected from environment.
 
 `context` - delay showing plot by using context manager (see below).
+
+`clear_on_error` - whether to clean up on any error.
 
 `label`, `color`, `marker`, `linestyle`, `linewidth`, `markersize` and rest `plotter_kwargs` - plotter parameters. Can differ per kind. See [common parameters](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html) for `kind='plot'`. Can be `list` or `tuple` to define per-dataset values. Values can also be `None` or even clipped to skip definition for particular dataset.
 
