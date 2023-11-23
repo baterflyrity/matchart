@@ -1,7 +1,7 @@
 """Convenient plotting wrapper around matplotlib."""
 from __future__ import annotations
 
-__version__ = "1.1.4"
+__version__ = "1.1.5"
 
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
@@ -78,6 +78,18 @@ class ContextPlotter(tuple):
 	def __exit__(self, *_):
 		if self.show:
 			plt.show(block=self.block)
+
+	@property
+	def figure(self) -> plt.Figure:
+		return self[0]
+
+	@property
+	def axis(self) -> plt.Axes:
+		return self[1]
+
+	@property
+	def diagrams(self) -> List[plt.Artist]:
+		return self[2]
 
 
 def _cycle(arguments: CycledArguments, index: int) -> Optional[NativeArgument]:

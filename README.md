@@ -321,15 +321,18 @@ with cplot(
 		[x, np.sin(x) - 2 * x + np.random.randn(50)],
 		[x, np.sin(x) + np.random.randn(50)],
 		title="'fivethirtyeight' style sheet",
-		theme='fivethirtyeight') as results:
-	ax = results[1]
-	ax.xaxis.set_visible(False)
-	ax.yaxis.set_visible(False)
+		theme='fivethirtyeight') as plotter:
+	plotter.axis.xaxis.set_visible(False)
+	plotter.axis.yaxis.set_visible(False)
 ```
 
 Now you can customize plots just adding literally one letter.
 
 # Changelog
+
+**1.1.5**:
+
+* Add getters to context plotter.
 
 **1.1.4**:
 
